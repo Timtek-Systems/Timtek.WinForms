@@ -1,12 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- 👇 disable the nullable warnings when compiling for .NET Standard 2.0 -->
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <NoWarn>$(NoWarn);nullable</NoWarn>
-  </PropertyGroup>
-
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFrameworks>net8.0-windows;net6.0-windows;net4.8</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
     <UseWindowsForms>true</UseWindowsForms>
@@ -21,7 +16,7 @@ In particular, we have a set of cadenced controls that can flash in a predetermi
     <RepositoryType>git</RepositoryType>
     <PackageTags>WinForms;Windows Forms;Controls;Indicators;Flashing;Cadenced;LED;Annunciator;Anunciator</PackageTags>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
-    <FileVersion>0.0.0.0-unversioned</FileVersion>
+    <FileVersion>0.0.0.0</FileVersion>
     <PackageLicenseExpression>MIT-0</PackageLicenseExpression>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -42,5 +37,10 @@ In particular, we have a set of cadenced controls that can flash in a predetermi
     </PackageReference>
     <PackageReference Include="TA.Utils.Core" Version="2.3.0" />
   </ItemGroup>
+
+  <!-- 👇 disable the nullable warnings when compiling for .NET Standard 2.0 -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <NoWarn>$(NoWarn);nullable</NoWarn>
+  </PropertyGroup>
 
 </Project>
