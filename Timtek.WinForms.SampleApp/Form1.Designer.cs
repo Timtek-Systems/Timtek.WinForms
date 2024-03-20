@@ -32,7 +32,8 @@
             ledHeartbeat = new LedIndicator();
             annunciatorPanel1 = new AnnunciatorPanel();
             annunciatorReady = new Annunciator();
-            annunciator1 = new Annunciator();
+            annunciatorFail = new Annunciator();
+            muteToggle = new SlidingToggleButton.ToggleSwitch();
             annunciatorPanel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -66,7 +67,7 @@
             annunciatorPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             annunciatorPanel1.BackColor = Color.FromArgb(64, 0, 0);
             annunciatorPanel1.Controls.Add(annunciatorReady);
-            annunciatorPanel1.Controls.Add(annunciator1);
+            annunciatorPanel1.Controls.Add(annunciatorFail);
             annunciatorPanel1.Location = new Point(177, 12);
             annunciatorPanel1.Name = "annunciatorPanel1";
             annunciatorPanel1.Size = new Size(443, 100);
@@ -87,26 +88,40 @@
             annunciatorReady.TabIndex = 0;
             annunciatorReady.Text = "READY";
             // 
-            // annunciator1
+            // annunciatorFail
             // 
-            annunciator1.ActiveColor = Color.FromArgb(200, 4, 4);
-            annunciator1.AutoSize = true;
-            annunciator1.BackColor = Color.FromArgb(64, 0, 0);
-            annunciator1.Cadence = CadencePattern.BlinkAlarm;
-            annunciator1.Font = new Font("Consolas", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            annunciator1.ForeColor = Color.FromArgb(200, 4, 4);
-            annunciator1.InactiveColor = Color.FromArgb(96, 4, 4);
-            annunciator1.Location = new Point(69, 0);
-            annunciator1.Name = "annunciator1";
-            annunciator1.Size = new Size(50, 22);
-            annunciator1.TabIndex = 1;
-            annunciator1.Text = "FAIL";
+            annunciatorFail.ActiveColor = Color.FromArgb(200, 4, 4);
+            annunciatorFail.AutoSize = true;
+            annunciatorFail.BackColor = Color.FromArgb(64, 0, 0);
+            annunciatorFail.Cadence = CadencePattern.BlinkAlarm;
+            annunciatorFail.Font = new Font("Consolas", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            annunciatorFail.ForeColor = Color.FromArgb(96, 4, 4);
+            annunciatorFail.InactiveColor = Color.FromArgb(96, 4, 4);
+            annunciatorFail.Location = new Point(69, 0);
+            annunciatorFail.Name = "annunciatorFail";
+            annunciatorFail.Size = new Size(50, 22);
+            annunciatorFail.TabIndex = 1;
+            annunciatorFail.Text = "FAIL";
+            // 
+            // muteToggle
+            // 
+            muteToggle.Location = new Point(177, 145);
+            muteToggle.Name = "muteToggle";
+            muteToggle.OffFont = new Font("Segoe UI", 9F);
+            muteToggle.OffText = "Run";
+            muteToggle.OnFont = new Font("Segoe UI", 9F);
+            muteToggle.OnText = "Mute";
+            muteToggle.Size = new Size(120, 40);
+            muteToggle.Style = SlidingToggleButton.ToggleSwitch.ToggleSwitchStyle.Fancy;
+            muteToggle.TabIndex = 3;
+            muteToggle.CheckedChanged += MuteToggleCheckedChanged;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(632, 450);
+            Controls.Add(muteToggle);
             Controls.Add(annunciatorPanel1);
             Controls.Add(ledHeartbeat);
             Controls.Add(ledSlowBlink);
@@ -124,6 +139,7 @@
         private LedIndicator ledHeartbeat;
         private AnnunciatorPanel annunciatorPanel1;
         private Annunciator annunciatorReady;
-        private Annunciator annunciator1;
+        private Annunciator annunciatorFail;
+        private SlidingToggleButton.ToggleSwitch muteToggle;
     }
 }
