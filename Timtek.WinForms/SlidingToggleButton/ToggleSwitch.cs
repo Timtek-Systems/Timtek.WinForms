@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Windows.Input;
 using Timtek.WinForms.SlidingToggleButton.Renderers;
 using Timer = System.Windows.Forms.Timer;
 
@@ -14,7 +15,7 @@ namespace Timtek.WinForms.SlidingToggleButton;
 [DefaultValue("Checked")]
 [DefaultEvent("CheckedChanged")]
 [ToolboxBitmap(typeof(CheckBox))]
-public class ToggleSwitch : Control
+public class ToggleSwitch : Control, ICommander
 {
     #region Delegate and Event declarations
 
@@ -110,6 +111,7 @@ public class ToggleSwitch : Control
     private Image _onButtonImage;
     private bool _onButtonScaleImage;
     private ToggleSwitchButtonAlignment _onButtonAlignment = ToggleSwitchButtonAlignment.Center;
+    private ICommand command;
 
     #endregion Private Members
 
@@ -1092,4 +1094,14 @@ public class ToggleSwitch : Control
     }
 
     #endregion Private Methods
+
+    /// <summary>
+    ///     When set, provides MVVM-style RelayCommand functionality for the control.
+    ///     The command is executed, passing in the current toggle state, whenever the state changes.
+    /// </summary>
+    public Relay? Command
+    {
+        get => command;
+        set => command = value;
+    }
 }
