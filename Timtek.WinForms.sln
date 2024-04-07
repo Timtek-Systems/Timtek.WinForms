@@ -8,6 +8,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Timtek.WinForms.SampleApp", "Timtek.WinForms.SampleApp\Timtek.WinForms.SampleApp.csproj", "{AE365513-EBC6-4A01-A553-0F568776BD60}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0CAD6EEF-7051-44E4-9BDE-1FB4819CA1DE}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

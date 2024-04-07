@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+﻿using Timtek.WinForms.MVVM;
 
 namespace Timtek.WinForms.SlidingToggleButton;
 
@@ -13,5 +13,5 @@ namespace Timtek.WinForms.SlidingToggleButton;
 /// </remarks>
 public interface ICommander
 {
-    public ICommand Command { get; set; }
+    public IRelayCommand? Command { get; set; }
 }

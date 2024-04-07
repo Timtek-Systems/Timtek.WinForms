@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Windows.Input;
+using Timtek.WinForms.MVVM;
 using Timtek.WinForms.SlidingToggleButton.Renderers;
 using Timer = System.Windows.Forms.Timer;
 
@@ -8,7 +8,6 @@ using Timer = System.Windows.Forms.Timer;
 /**********************************************************************************/
 /*   http://www.codeproject.com/Articles/1029499/ToggleSwitch-Winforms-Control    */
 /**********************************************************************************/
-
 
 namespace Timtek.WinForms.SlidingToggleButton;
 
@@ -111,7 +110,7 @@ public class ToggleSwitch : Control, ICommander
     private Image _onButtonImage;
     private bool _onButtonScaleImage;
     private ToggleSwitchButtonAlignment _onButtonAlignment = ToggleSwitchButtonAlignment.Center;
-    private ICommand command;
+    private IRelayCommand? command;
 
     #endregion Private Members
 
@@ -1087,10 +1086,19 @@ public class ToggleSwitch : Control, ICommander
         if (CheckedChanged != null)
             CheckedChanged(this, new EventArgs());
 
+        ExecuteCommand();
+
         if (_lastMouseEventArgs != null)
             OnMouseMove(_lastMouseEventArgs);
 
         _lastMouseEventArgs = null;
+    }
+
+    private void ExecuteCommand()
+    {
+        if (Command is null)
+            return;
+        Command.Execute(Checked);
     }
 
     #endregion Private Methods
@@ -1099,9 +1107,19 @@ public class ToggleSwitch : Control, ICommander
     ///     When set, provides MVVM-style RelayCommand functionality for the control.
     ///     The command is executed, passing in the current toggle state, whenever the state changes.
     /// </summary>
-    public Relay? Command
+    public IRelayCommand? Command
     {
         get => command;
-        set => command = value;
+        set
+        {
+            if (command is not null)
+                command.CanExecuteChanged -= HandleCanExecuteChanged;
+            command = value;
+        }
+    }
+
+    private void HandleCanExecuteChanged(object? sender, EventArgs e)
+    {
+        throw new NotImplementedException();
     }
 }
