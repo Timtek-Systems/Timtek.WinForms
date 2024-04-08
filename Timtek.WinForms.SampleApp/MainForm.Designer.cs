@@ -1,6 +1,6 @@
 ﻿namespace Timtek.WinForms.SampleApp
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -27,14 +27,22 @@
         ///  the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-        {
+            {
+            components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             ledSlowBlink = new LedIndicator();
             ledHeartbeat = new LedIndicator();
             annunciatorPanel1 = new AnnunciatorPanel();
             annunciatorReady = new Annunciator();
             annunciatorFail = new Annunciator();
             muteToggle = new SlidingToggleButton.ToggleSwitch();
+            mainFormViewModelBindingSource = new BindingSource(components);
+            RelayCommandButton = new Button();
+            toggleSwitch1 = new SlidingToggleButton.ToggleSwitch();
+            MvvmGroup = new GroupBox();
             annunciatorPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)mainFormViewModelBindingSource).BeginInit();
+            MvvmGroup.SuspendLayout();
             SuspendLayout();
             // 
             // ledSlowBlink
@@ -95,7 +103,7 @@
             annunciatorFail.BackColor = Color.FromArgb(64, 0, 0);
             annunciatorFail.Cadence = CadencePattern.BlinkAlarm;
             annunciatorFail.Font = new Font("Consolas", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            annunciatorFail.ForeColor = Color.FromArgb(96, 4, 4);
+            annunciatorFail.ForeColor = Color.FromArgb(200, 4, 4);
             annunciatorFail.InactiveColor = Color.FromArgb(96, 4, 4);
             annunciatorFail.Location = new Point(69, 0);
             annunciatorFail.Name = "annunciatorFail";
@@ -105,33 +113,80 @@
             // 
             // muteToggle
             // 
+            muteToggle.ButtonImage = (Image)resources.GetObject("muteToggle.ButtonImage");
+            muteToggle.Command = null;
             muteToggle.Location = new Point(177, 145);
             muteToggle.Name = "muteToggle";
             muteToggle.OffFont = new Font("Segoe UI", 9F);
             muteToggle.OffText = "Run";
             muteToggle.OnFont = new Font("Segoe UI", 9F);
             muteToggle.OnText = "Mute";
-            muteToggle.Size = new Size(120, 40);
+            muteToggle.Size = new Size(120, 34);
             muteToggle.Style = SlidingToggleButton.ToggleSwitch.ToggleSwitchStyle.Fancy;
             muteToggle.TabIndex = 3;
             muteToggle.CheckedChanged += MuteToggleCheckedChanged;
             // 
-            // Form1
+            // mainFormViewModelBindingSource
+            // 
+            mainFormViewModelBindingSource.DataSource = typeof(MainFormViewModel);
+            // 
+            // RelayCommandButton
+            // 
+            RelayCommandButton.DataBindings.Add(new Binding("Command", mainFormViewModelBindingSource, "ButtonClickRelayCommand", true, DataSourceUpdateMode.OnPropertyChanged));
+            RelayCommandButton.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            RelayCommandButton.Location = new Point(131, 22);
+            RelayCommandButton.Name = "RelayCommandButton";
+            RelayCommandButton.Size = new Size(175, 33);
+            RelayCommandButton.TabIndex = 4;
+            RelayCommandButton.Text = "Beep Sound";
+            RelayCommandButton.UseVisualStyleBackColor = true;
+            // 
+            // toggleSwitch1
+            // 
+            toggleSwitch1.ButtonImage = (Image)resources.GetObject("toggleSwitch1.ButtonImage");
+            toggleSwitch1.Command = null;
+            toggleSwitch1.DataBindings.Add(new Binding("Command", mainFormViewModelBindingSource, "EnableDisableToggleCommand", true, DataSourceUpdateMode.OnPropertyChanged));
+            toggleSwitch1.Location = new Point(6, 22);
+            toggleSwitch1.Name = "toggleSwitch1";
+            toggleSwitch1.OffFont = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            toggleSwitch1.OffForeColor = SystemColors.HighlightText;
+            toggleSwitch1.OffText = "Disabled";
+            toggleSwitch1.OnFont = new Font("Segoe UI Semibold", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            toggleSwitch1.OnText = "Enabled";
+            toggleSwitch1.Size = new Size(119, 33);
+            toggleSwitch1.Style = SlidingToggleButton.ToggleSwitch.ToggleSwitchStyle.Fancy;
+            toggleSwitch1.TabIndex = 6;
+            // 
+            // MvvmGroup
+            // 
+            MvvmGroup.Controls.Add(toggleSwitch1);
+            MvvmGroup.Controls.Add(RelayCommandButton);
+            MvvmGroup.Location = new Point(177, 200);
+            MvvmGroup.Name = "MvvmGroup";
+            MvvmGroup.Size = new Size(442, 68);
+            MvvmGroup.TabIndex = 7;
+            MvvmGroup.TabStop = false;
+            MvvmGroup.Text = "MVVM Relay Command";
+            // 
+            // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(632, 450);
+            Controls.Add(MvvmGroup);
             Controls.Add(muteToggle);
             Controls.Add(annunciatorPanel1);
             Controls.Add(ledHeartbeat);
             Controls.Add(ledSlowBlink);
-            Name = "Form1";
+            Name = "MainForm";
             Text = "Form1";
             annunciatorPanel1.ResumeLayout(false);
             annunciatorPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)mainFormViewModelBindingSource).EndInit();
+            MvvmGroup.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
-        }
+            }
 
         #endregion
 
@@ -141,5 +196,10 @@
         private Annunciator annunciatorReady;
         private Annunciator annunciatorFail;
         private SlidingToggleButton.ToggleSwitch muteToggle;
-    }
+        private SlidingToggleButton.ToggleSwitch RelayCommandExecutionToggle;
+        private Button RelayCommandButton;
+        private BindingSource mainFormViewModelBindingSource;
+        private SlidingToggleButton.ToggleSwitch toggleSwitch1;
+        private GroupBox MvvmGroup;
+        }
 }
