@@ -6,34 +6,40 @@ namespace Timtek.WinForms.MVVM;
 /// <summary>
 ///     A <see cref="RelayCommand" /> that executes asynchronously. While the command is executing,
 ///     <see cref="CanExecute" /> is <c>false</c> so that command executions cannot overlap.
+///     The command parameter is of type <typeparamref name="TParam" /> and will be passed to the <c>execute</c> method and
+///     the <c>canExecuteQuery<c> predicate.</c>
 /// </summary>
-public class AsyncRelayCommand : IRelayCommand
+public class AsyncRelayCommand<TParam> : IRelayCommand
 {
-    private readonly Func<Task> execute;
-    private readonly Func<bool> canExecuteQuery;
+    private readonly Func<TParam, Task> execute;
+    private readonly Func<TParam, bool> canExecuteQuery;
     private long isExecuting;
     private readonly ILog log;
 
     /// <summary>
-    ///     Initialize a new instance.
+    ///     Initialize a new instance of a relay command that executes asynchronously and takes parameter of type
+    ///     <typeparamref name="TParam" />.
     /// </summary>
     /// <param name="execute">A function that returns a task that completes after the command fully executes.</param>
-    /// <param name="canExecute">A function that returns a boolean indicating whether the command can currently execute.</param>
+    /// <param name="canExecute">
+    ///     A function that returns a boolean indicating whether the command can currently execute. If no
+    ///     value is supplied, then the command can always execute.
+    /// </param>
     /// <param name="name">The name of the command (for diagnostic/display purposes). Optional; defaults to "unnamed".</param>
     /// <param name="log">
     ///     An optional logging service. If provided, log entries will be generated for <see cref="CanExecute" />
     ///     state changes, <see cref="CanExecuteChanged" /> events and command invocations.
     /// </param>
     public AsyncRelayCommand(
-        Func<Task>  execute,
-        Func<bool>? canExecute = null,
-        string?     name       = null,
-        ILog?       log        = null)
+        Func<TParam, Task>  execute,
+        Func<TParam, bool>? canExecute = null,
+        string?             name       = null,
+        ILog?               log        = null)
     {
         Name = name ?? "unnamed";
         this.execute = execute;
-        canExecuteQuery = canExecute ?? (() => true);
-        this.log = log ?? new DegenerateLoggerService();
+        canExecuteQuery = canExecute ?? (param => true);
+        this.log = log               ?? new DegenerateLoggerService();
     }
 
     /// <summary>
@@ -76,10 +82,11 @@ public class AsyncRelayCommand : IRelayCommand
 
         try
         {
-            var canExecute = canExecuteQuery();
+            var canExecute = canExecuteQuery((TParam)parameter);
             log.Trace()
                 .Message("RelayCommand {name} CanExecute = {canExecute}", Name, canExecute)
-                .Property("relayCommand", this)
+                .Property(nameof(parameter), parameter)
+                .Property("relayCommand",    this)
                 .Write();
             return canExecute;
         }
@@ -107,9 +114,10 @@ public class AsyncRelayCommand : IRelayCommand
             RaiseCanExecuteChanged();
             log.Trace()
                 .Message("AsyncRelayCommand {name} Executing", Name)
-                .Property("relayCommand", this)
+                .Property(nameof(parameter), parameter)
+                .Property("relayCommand",    this)
                 .Write();
-            await execute().ContinueOnAnyThread(); // ToDo - do we need to continue on the UI thread?
+            await execute((TParam)parameter).ContinueOnAnyThread(); // ToDo - do we need to continue on the UI thread?
         }
         // We are starting a fire-and-forget task, so we MUST handle any and all exceptions to avoid application crashes.
         catch (Exception ex)
@@ -125,4 +133,25 @@ public class AsyncRelayCommand : IRelayCommand
             RaiseCanExecuteChanged();
         }
     }
+}
+
+public class AsyncRelayCommand : AsyncRelayCommand<object>
+{
+    /// <summary>
+    ///     A wrapper around <see cref="AsyncRelayCommand{TParam}" /> that just ignores the parameter.
+    /// </summary>
+    /// <param name="execute">An async method with no parameters.</param>
+    /// <param name="canExecute">
+    ///     A <see cref="Func{bool}" /> with no parameters.
+    ///     Note: unlike some implementations of RelayCommand, the CanExecute method must be supplied.
+    ///     If there is no suitable method, use <c>()=>true</c>.
+    /// </param>
+    /// <param name="name">Display name for diagnostics.</param>
+    /// <param name="log">An optional logging service.</param>
+    public AsyncRelayCommand(Func<Task> execute, Func<bool> canExecute = null, string? name = null, ILog? log = null) :
+        base(
+             async obj => await execute(),
+             obj => canExecute(),
+             name,
+             log) { }
 }
