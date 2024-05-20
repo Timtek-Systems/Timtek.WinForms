@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Timtek.WinForms.MVVM;
 using Timtek.WinForms.SlidingToggleButton.Renderers;
 using Timer = System.Windows.Forms.Timer;
 
@@ -8,13 +9,12 @@ using Timer = System.Windows.Forms.Timer;
 /*   http://www.codeproject.com/Articles/1029499/ToggleSwitch-Winforms-Control    */
 /**********************************************************************************/
 
-
 namespace Timtek.WinForms.SlidingToggleButton;
 
 [DefaultValue("Checked")]
 [DefaultEvent("CheckedChanged")]
 [ToolboxBitmap(typeof(CheckBox))]
-public class ToggleSwitch : Control
+public class ToggleSwitch : Control, ICommander
 {
     #region Delegate and Event declarations
 
@@ -110,6 +110,7 @@ public class ToggleSwitch : Control
     private Image _onButtonImage;
     private bool _onButtonScaleImage;
     private ToggleSwitchButtonAlignment _onButtonAlignment = ToggleSwitchButtonAlignment.Center;
+    private IRelayCommand? command;
 
     #endregion Private Members
 
@@ -1085,11 +1086,40 @@ public class ToggleSwitch : Control
         if (CheckedChanged != null)
             CheckedChanged(this, new EventArgs());
 
+        ExecuteCommand();
+
         if (_lastMouseEventArgs != null)
             OnMouseMove(_lastMouseEventArgs);
 
         _lastMouseEventArgs = null;
     }
 
+    private void ExecuteCommand()
+    {
+        if (Command is null)
+            return;
+        Command.Execute(Checked);
+    }
+
     #endregion Private Methods
+
+    /// <summary>
+    ///     When set, provides MVVM-style RelayCommand functionality for the control.
+    ///     The command is executed, passing in the current toggle state, whenever the state changes.
+    /// </summary>
+    public IRelayCommand? Command
+    {
+        get => command;
+        set
+        {
+            if (command is not null)
+                command.CanExecuteChanged -= HandleCanExecuteChanged;
+            command = value;
+        }
+    }
+
+    private void HandleCanExecuteChanged(object? sender, EventArgs e)
+    {
+        throw new NotImplementedException();
+    }
 }

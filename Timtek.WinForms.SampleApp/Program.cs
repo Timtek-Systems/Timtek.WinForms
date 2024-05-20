@@ -1,3 +1,5 @@
+using Timtek.WinForms.SampleApp.DependencyManagement;
+
 namespace Timtek.WinForms.SampleApp
 {
     internal static class Program
@@ -11,7 +13,8 @@ namespace Timtek.WinForms.SampleApp
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            var mainForm = CompositionRoot.Get<MainForm>();
+            Application.Run(mainForm);
         }
     }
 }
