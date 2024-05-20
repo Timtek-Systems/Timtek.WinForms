@@ -55,28 +55,39 @@ public enum CadencePattern : uint
     ///     appropriate for indicating non-critical ongoing steady active state.
     /// </summary>
     Wink = 0xFFFFFFFE,
+
     /// <summary>
-    /// One short pulse per cadence cycle
+    ///     One short pulse per cadence cycle
     /// </summary>
     Pulse1 = 0x00000003,
+
     /// <summary>
-    /// Two short pulses per cadence cycle
+    ///     Two short pulses per cadence cycle
     /// </summary>
     Pulse2 = 0x00000033,
+
     /// <summary>
-    /// Three short pulses per cadence cycle
+    ///     Three short pulses per cadence cycle
     /// </summary>
     Pulse3 = 0x00000333,
+
     /// <summary>
-    /// Four short pulses per cadence cycle
+    ///     Four short pulses per cadence cycle
     /// </summary>
     Pulse4 = 0x00003333,
+
     /// <summary>
-    /// A double pulse reminiscent of a heart beat
+    ///     A double pulse reminiscent of a heart beat
     /// </summary>
     Heartbeat = 0x0000000A,
+
     /// <summary>
-    /// Like a heart beat, but syncopated
+    ///     Heartbeat on a negative field (wink heartbeat)
     /// </summary>
-    Offbeat = 0x000A0000,
+    OffHeartbeat = 0xFFFFFFF5,
+
+    /// <summary>
+    ///     Like a heart beat, but syncopated
+    /// </summary>
+    Offbeat = 0x000A0000
 }

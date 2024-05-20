@@ -23,7 +23,7 @@ public sealed class LedIndicator : UserControl, ICadencedControl
 
     public LedIndicator()
     {
-        components = null;
+        //components = null;
         InitializeComponent(); // This call is required by the Windows.Forms Form Designer.
         Cadence = CadencePattern.SteadyOn;
         StartCadenceUpdates();
