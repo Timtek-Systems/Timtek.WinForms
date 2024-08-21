@@ -46,6 +46,8 @@ internal sealed class CadencedControlUpdater
 
     private CadencedControlUpdater()
     {
+        cancellationTokenSource = new CancellationTokenSource();
+        updateTask = Task.CompletedTask;
     }
 
     /// <summary>
@@ -71,7 +73,7 @@ internal sealed class CadencedControlUpdater
             Trace.TraceWarning($"Ignoring duplicate hash code {hashCode}.");
         else
             ControlList.Add(hashCode, new WeakReference<ICadencedControl>(control));
-        if (updateTask == null) StartUpdates();
+        if (updateTask.IsCompleted) StartUpdates();
     }
 
     /// <summary>
@@ -107,7 +109,7 @@ internal sealed class CadencedControlUpdater
         cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
         updateTask = UpdateTask(TimeSpan.FromMilliseconds(125), token)
-            .ContinueWith(task => Trace.TraceInformation("Cadence updates stopped."));
+            .ContinueWith(task => Trace.TraceInformation("Cadence updates stopped."), CancellationToken.None);
     }
 
     /// <summary>
@@ -115,12 +117,11 @@ internal sealed class CadencedControlUpdater
     /// </summary>
     private void StopUpdates()
     {
-        cancellationTokenSource?.Cancel();
-        updateTask?.ContinueWith(task => Trace.TraceInformation("Cadence updates cancelled."))
+        cancellationTokenSource.Cancel();
+        updateTask.ContinueWith(task => Trace.TraceInformation("Cadence updates cancelled."))
             .Wait(TimeSpan.FromMilliseconds(200));
-        updateTask = null;
-        cancellationTokenSource?.Dispose();
-        cancellationTokenSource = null;
+        updateTask = Task.CompletedTask;
+        cancellationTokenSource.Dispose();
     }
 
     /// <summary>
