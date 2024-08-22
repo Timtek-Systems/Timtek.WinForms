@@ -3,8 +3,8 @@
 // File: CadencedControlUpdater.cs  Last modified: 2019-09-21@02:42 by Tim Long
 // Licensed under the Tigra MIT License, see https://tigra.mit-license.org/
 
-using System.Diagnostics;
 using TA.Utils.Core;
+using TA.Utils.Core.Diagnostics;
 
 namespace Timtek.WinForms;
 
@@ -43,9 +43,11 @@ internal sealed class CadencedControlUpdater
 
     private CancellationTokenSource cancellationTokenSource;
     private Task updateTask;
+    private readonly ILog log;
 
-    private CadencedControlUpdater()
+    private CadencedControlUpdater(ILog log = null)
     {
+        this.log = log ?? new DegenerateLoggerService();
         cancellationTokenSource = new CancellationTokenSource();
         updateTask = Task.CompletedTask;
     }
@@ -68,9 +70,9 @@ internal sealed class CadencedControlUpdater
     public void Add(ICadencedControl control)
     {
         var hashCode = control.GetHashCode();
-        Trace.WriteLine($"Adding hash {hashCode}");
+        log.Info().Message("Adding hash {hashCode}", hashCode).Write();
         if (ControlList.ContainsKey(hashCode))
-            Trace.TraceWarning($"Ignoring duplicate hash code {hashCode}.");
+            log.Warn().Message("Ignoring duplicate hash code {hashCode}.", hashCode).Write();
         else
             ControlList.Add(hashCode, new WeakReference<ICadencedControl>(control));
         if (updateTask.IsCompleted) StartUpdates();
@@ -86,13 +88,16 @@ internal sealed class CadencedControlUpdater
         try
         {
             var hash = control.GetHashCode();
-            Trace.TraceInformation($"Removing hash {hash}");
+            log.Info().Message("Removing hash {hash}", hash).Write();
             if (ControlList.ContainsKey(hash))
                 ControlList.Remove(hash);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Trace.TraceError($"{e.GetType().Name} removing control: {e.Message}");
+            log.Error()
+                .Exception(ex)
+                .Message("Exception removing cadenced control: {ex.Message}")
+                .Write();
         }
         finally
         {
@@ -109,7 +114,7 @@ internal sealed class CadencedControlUpdater
         cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
         updateTask = UpdateTask(TimeSpan.FromMilliseconds(125), token)
-            .ContinueWith(task => Trace.TraceInformation("Cadence updates stopped."), CancellationToken.None);
+            .ContinueWith(task => log.Info().Message("Cadence updates stopped.").Write(), CancellationToken.None);
     }
 
     /// <summary>
@@ -118,7 +123,7 @@ internal sealed class CadencedControlUpdater
     private void StopUpdates()
     {
         cancellationTokenSource.Cancel();
-        updateTask.ContinueWith(task => Trace.TraceInformation("Cadence updates cancelled."))
+        updateTask.ContinueWith(task => log.Info().Message("Cadence updates cancelled.").Write())
             .Wait(TimeSpan.FromMilliseconds(200));
         updateTask = Task.CompletedTask;
         cancellationTokenSource.Dispose();
