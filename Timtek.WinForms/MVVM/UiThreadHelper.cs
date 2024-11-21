@@ -35,9 +35,10 @@ public class UiThreadHelper
     /// <param name="action">The action to run.</param>
     public void RunOnUiThread(Action action)
     {
-        if (RunningOnUiThread())
-            action();
-        else
+        //if (RunningOnUiThread())
+        //    action();
+        //else
+        //    syncContext.Post(_ => action(), null);
             syncContext.Post(_ => action(), null);
     }
 }

@@ -71,7 +71,6 @@ public class AsyncRelayCommand<TParam> : IRelayCommand
                 .Property("relayCommand", this)
                 .Write();
             uiThreadHelper.RunOnUiThread(OnCanExecuteChanged);
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception e)
         {
