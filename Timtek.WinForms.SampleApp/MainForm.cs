@@ -14,8 +14,5 @@ public partial class MainForm : Form
         annunciatorFail.Mute = muteToggle.Checked;
     }
 
-    private void DataBind(MainFormViewModel viewModel)
-    {
-        mainFormViewModelBindingSource.DataSource = viewModel;
-    }
+    private void DataBind(MainFormViewModel viewModel) => mainFormViewModelBindingSource.DataSource = viewModel;
 }

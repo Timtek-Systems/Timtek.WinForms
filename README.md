@@ -29,6 +29,19 @@ A `RelayCommand` can be data-bound to a control's `Command` property and the com
 For a `Button` control, clicking the button invokes the command.
 For a `ToggleSwitch` control, changing the toggle state invokes the command with the value of the `Checked` property.
 
+### MVVM Considerations
+
+The control does not currently work very well with data binding. For example, it does not seem to be possible to successfully bind the `Checked` property to a ViewModel property.
+
+We have worked around this by adding a very basic support for the `ICommand` pattern.
+The command is invoked whenever the state of the `Checked` property changes.
+The ViewModel should expose a public property of type `RelayCommand<bool>`.
+This property can then be data-bound to a `ToggleSwitch` control's `Command` property.
+
+
+Since the ViewModel class should not have any knowledge of the View, there is no way for it to query the `Checked` property of the control. The `RelayCommand<bool>` implementation expects a `bool` parameter and the `ToggleSwitch` control passes in the current value of its `Checked` property.
+
+
 ## Cadenced Controls
 
 Provides a generic way to have a control flash or blink with a defined `cadence pattern`. Any control implementing `ICadencedControl` can make use of this mechanism.
@@ -53,15 +66,8 @@ The control is quite customisable and can take on a wide variety of appearances,
 
 This control draws heavily on the work of Johnny Jorgensen thanks to his CodeProject publication, and is used under the CodeProject Open License.
 
-### MVVM Considerations
+## Gauge Controls
 
-The control does not currently work very well with data binding. For example, it does not seem to be possible to successfully bind the `Checked` property to a ViewModel property.
+A gauge control is included based on the defunct AGauge project by Andrew J. Bauer. The control is somewhat dated but is nevertheless useful for many simple applications.
 
-We have worked around this by adding a very basic support for the `ICommand` pattern.
-The command is invoked whenever the state of the `Checked` property changes.
-The ViewModel should expose a public property of type `RelayCommand<bool>`.
-This property can then be data-bound to a `ToggleSwitch` control's `Command` property.
-
-
-Since the ViewModel class should not have any knowledge of the View, there is no way for it to query the `Checked` property of the control. The `RelayCommand<bool>` implementation expects a `bool` parameter and the `ToggleSwitch` control passes in the current value of its `Checked` property.
-
+For usage hints, please see https://www.codeproject.com/articles/448721/agauge-winforms-gauge-control

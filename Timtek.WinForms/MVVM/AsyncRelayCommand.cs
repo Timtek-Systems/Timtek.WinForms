@@ -15,6 +15,7 @@ public class AsyncRelayCommand<TParam> : IRelayCommand
     private readonly Func<TParam, bool> canExecuteQuery;
     private long isExecuting;
     private readonly ILog log;
+    private readonly UiThreadHelper uiThreadHelper;
 
     /// <summary>
     ///     Initialize a new instance of a relay command that executes asynchronously and takes parameter of type
@@ -36,6 +37,7 @@ public class AsyncRelayCommand<TParam> : IRelayCommand
         string?             name       = null,
         ILog?               log        = null)
     {
+        uiThreadHelper = new UiThreadHelper(); // Will throw if not on the UI thread.
         Name = name ?? "unnamed";
         this.execute = execute;
         canExecuteQuery = canExecute ?? (param => true);
@@ -49,8 +51,13 @@ public class AsyncRelayCommand<TParam> : IRelayCommand
 
     /// <summary>
     ///     Raised as a notification to the control that it should re-check the value of <see cref="CanExecute" />.
+    ///     Note: delegates will be invoked on the UI thread.
     /// </summary>
     public event EventHandler? CanExecuteChanged;
+
+    protected virtual void OnCanExecuteChanged() =>
+        // ReSharper disable once EventExceptionNotDocumented
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
     /// <summary>
     ///     Called from a ViewModel to notify the control that it should check the state of <see cref="CanExecute" />.
@@ -63,8 +70,7 @@ public class AsyncRelayCommand<TParam> : IRelayCommand
                 .Message("AsyncRelayCommand {name} RaiseCanExecuteChanged", Name)
                 .Property("relayCommand", this)
                 .Write();
-
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            uiThreadHelper.RunOnUiThread(OnCanExecuteChanged);
         }
         catch (Exception e)
         {
@@ -117,7 +123,7 @@ public class AsyncRelayCommand<TParam> : IRelayCommand
                 .Property(nameof(parameter), parameter)
                 .Property("relayCommand",    this)
                 .Write();
-            await execute((TParam)parameter).ContinueOnAnyThread(); // ToDo - do we need to continue on the UI thread?
+            await execute((TParam)parameter).ContinueInCurrentContext();
         }
         // We are starting a fire-and-forget task, so we MUST handle any and all exceptions to avoid application crashes.
         catch (Exception ex)
@@ -148,10 +154,10 @@ public class AsyncRelayCommand : AsyncRelayCommand<object>
     /// </param>
     /// <param name="name">Display name for diagnostics.</param>
     /// <param name="log">An optional logging service.</param>
-    public AsyncRelayCommand(Func<Task> execute, Func<bool> canExecute = null, string? name = null, ILog? log = null) :
+    public AsyncRelayCommand(Func<Task> execute, Func<bool>? canExecute = null, string? name = null, ILog? log = null) :
         base(
-             async obj => await execute(),
-             obj => canExecute(),
-             name,
-             log) { }
+            async obj => await execute(),
+            obj => canExecute(),
+            name,
+            log) { }
 }

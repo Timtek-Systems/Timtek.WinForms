@@ -27,7 +27,7 @@
         ///  the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-            {
+        {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             ledSlowBlink = new LedIndicator();
@@ -40,9 +40,11 @@
             RelayCommandButton = new Button();
             toggleSwitch1 = new SlidingToggleButton.ToggleSwitch();
             MvvmGroup = new GroupBox();
+            aGauge1 = new Gauge.AGauge();
             annunciatorPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainFormViewModelBindingSource).BeginInit();
             MvvmGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)aGauge1).BeginInit();
             SuspendLayout();
             // 
             // ledSlowBlink
@@ -78,7 +80,7 @@
             annunciatorPanel1.Controls.Add(annunciatorFail);
             annunciatorPanel1.Location = new Point(177, 12);
             annunciatorPanel1.Name = "annunciatorPanel1";
-            annunciatorPanel1.Size = new Size(443, 100);
+            annunciatorPanel1.Size = new Size(451, 100);
             annunciatorPanel1.TabIndex = 2;
             // 
             // annunciatorReady
@@ -103,7 +105,7 @@
             annunciatorFail.BackColor = Color.FromArgb(64, 0, 0);
             annunciatorFail.Cadence = CadencePattern.BlinkAlarm;
             annunciatorFail.Font = new Font("Consolas", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            annunciatorFail.ForeColor = Color.FromArgb(200, 4, 4);
+            annunciatorFail.ForeColor = Color.FromArgb(96, 4, 4);
             annunciatorFail.InactiveColor = Color.FromArgb(96, 4, 4);
             annunciatorFail.Location = new Point(69, 0);
             annunciatorFail.Name = "annunciatorFail";
@@ -168,11 +170,35 @@
             MvvmGroup.TabStop = false;
             MvvmGroup.Text = "MVVM Relay Command";
             // 
+            // aGauge1
+            // 
+            aGauge1.BaseArcColor = Color.Chartreuse;
+            aGauge1.BaseArcRadius = 110;
+            aGauge1.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            aGauge1.Location = new Point(328, 274);
+            aGauge1.Name = "aGauge1";
+            aGauge1.NeedleColor1 = Gauge.AGaugeNeedleColor.Yellow;
+            aGauge1.NeedleColor2 = Color.Gold;
+            aGauge1.NeedleWidth = 3;
+            aGauge1.ScaleLinesInterInnerRadius = 96;
+            aGauge1.ScaleLinesInterOuterRadius = 110;
+            aGauge1.ScaleLinesMajorInnerRadius = 90;
+            aGauge1.ScaleLinesMajorOuterRadius = 110;
+            aGauge1.ScaleLinesMinorInnerRadius = 100;
+            aGauge1.ScaleLinesMinorOuterRadius = 110;
+            aGauge1.ScaleNumbersColor = Color.IndianRed;
+            aGauge1.ScaleNumbersRadius = 120;
+            aGauge1.Size = new Size(291, 261);
+            aGauge1.TabIndex = 8;
+            aGauge1.Text = "aGauge1";
+            aGauge1.Value = 100F;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(632, 450);
+            ClientSize = new Size(640, 547);
+            Controls.Add(aGauge1);
             Controls.Add(MvvmGroup);
             Controls.Add(muteToggle);
             Controls.Add(annunciatorPanel1);
@@ -184,9 +210,10 @@
             annunciatorPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)mainFormViewModelBindingSource).EndInit();
             MvvmGroup.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)aGauge1).EndInit();
             ResumeLayout(false);
             PerformLayout();
-            }
+        }
 
         #endregion
 
@@ -196,10 +223,10 @@
         private Annunciator annunciatorReady;
         private Annunciator annunciatorFail;
         private SlidingToggleButton.ToggleSwitch muteToggle;
-        private SlidingToggleButton.ToggleSwitch RelayCommandExecutionToggle;
         private Button RelayCommandButton;
         private BindingSource mainFormViewModelBindingSource;
         private SlidingToggleButton.ToggleSwitch toggleSwitch1;
         private GroupBox MvvmGroup;
-        }
+        private Gauge.AGauge aGauge1;
+    }
 }
