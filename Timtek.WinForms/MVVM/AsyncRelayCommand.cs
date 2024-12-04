@@ -9,7 +9,7 @@ namespace Timtek.WinForms.MVVM;
 ///     The command parameter is of type <typeparamref name="TParam" /> and will be passed to the <c>execute</c> method and
 ///     the <c>canExecuteQuery<c> predicate.</c>
 /// </summary>
-public class AsyncRelayCommand<TParam> : IRelayCommand
+public class AsyncRelayCommand<TParam> : IRelayCommand<TParam>
 {
     private readonly Func<TParam, Task> execute;
     private readonly Func<TParam, bool> canExecuteQuery;
