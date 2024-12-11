@@ -109,12 +109,20 @@ public class RelayCommand<TParam> : IRelayCommand<TParam>
 
     public bool CanExecute(object? parameter)
     {
-        var typedParam = (TParam?)parameter; // Will throw if parameter is not assignable to TParam.
+        if (parameter is not TParam typedParam)
+        {
+            log.Warn()
+                .Message("RelayCommand {name} CanExecute received parameter of an incorrect type: {parameter}", Name, parameter)
+                .Property("relayCommand", this)
+                .Write();
+            return false;
+        }
+
         try
         {
             var canExecute = canExecuteQuery(typedParam);
             log.Trace()
-                .Message("RelayCommand {{name}} CanExecute({parameter}) = {{canExecute}}", Name, typedParam, canExecute)
+                .Message("RelayCommand {name} CanExecute({parameter}) = {canExecute}", Name, typedParam, canExecute)
                 .Property("relayCommand", this)
                 .Write();
             return canExecute;
@@ -136,7 +144,15 @@ public class RelayCommand<TParam> : IRelayCommand<TParam>
     /// <param name="parameter">The command parameter which must be of runtime type <typeparamref name="TParam" /> or null.</param>
     public void Execute(object? parameter)
     {
-        var typedParam = (TParam?)parameter; // Will throw if parameter is not assignable to TParam.
+        if (parameter is not TParam typedParam)
+        {
+            log.Warn()
+                .Message("RelayCommand {name} Execute received parameter of an incorrect type: {parameter}", Name, parameter)
+                .Property("relayCommand", this)
+                .Write();
+            return;
+        }
+
         try
         {
             log.Trace()
