@@ -2,6 +2,8 @@ namespace Timtek.WinForms.SampleApp;
 
 public partial class MainForm : Form
 {
+    private bool enableFlag;
+
     public MainForm(MainFormViewModel viewModel)
     {
         InitializeComponent();
