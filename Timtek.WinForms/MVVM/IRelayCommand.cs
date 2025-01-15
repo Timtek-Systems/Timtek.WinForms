@@ -16,3 +16,12 @@ public interface IRelayCommand : ICommand
     /// </summary>
     void RaiseCanExecuteChanged();
 }
+
+/// <summary>
+///     A Relay Command in which the <see cref="ICommand.Execute" /> and <see cref="ICommand.CanExecute" /> methods accept
+///     a parameter of type <typeparamref name="TParam" />.
+/// </summary>
+/// <typeparam name="TParam"></typeparam>
+public interface IRelayCommand<TParam> : IRelayCommand
+{
+}
