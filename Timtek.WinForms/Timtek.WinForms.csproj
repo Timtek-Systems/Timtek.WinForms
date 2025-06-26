@@ -34,8 +34,4 @@ In particular, we have a set of cadenced controls that can flash in a predetermi
     </PackageReference>
     <PackageReference Include="TA.Utils.Core" />
   </ItemGroup>
-  <!-- 👇 disable the nullable warnings when compiling for .NET Standard 2.0 -->
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <NoWarn>$(NoWarn);nullable</NoWarn>
-  </PropertyGroup>
 </Project>
