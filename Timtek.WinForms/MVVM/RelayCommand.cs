@@ -1,26 +1,47 @@
-using System.Windows.Input;
 using TA.Utils.Core.Diagnostics;
 
 namespace Timtek.WinForms.MVVM;
 
 /// <summary>
-///     A Relay Command in which the <see cref="ICommand.Execute" /> and <see cref="ICommand.CanExecute" /> methods accept
-///     a parameter of type <typeparamref name="TParam" />.
+///     Represents a command that can be executed and queried for its ability to execute.
+///     This class implements the <see cref="IRelayCommand" /> interface and provides support for
+///     executing actions, determining executability, and raising notifications when the executability changes.
 /// </summary>
-/// <typeparam name="TParam"></typeparam>
-public interface IRelayCommand<TParam> : IRelayCommand
-{
-}
-
+/// <remarks>
+///     The <see cref="RelayCommand" /> is typically used in MVVM patterns to bind user interface actions
+///     to logic in the view model. It ensures that commands are executed on the UI thread and provides
+///     optional logging capabilities.
+/// </remarks>
 public class RelayCommand : IRelayCommand
 {
-    public string Name { get; }
-    private readonly Action executeAction;
-    private readonly Func<bool> canExecuteQuery;
-    private readonly ILog log;
+    public           string         Name { get; }
+    private readonly Action         executeAction;
+    private readonly Func<bool>     canExecuteQuery;
+    private readonly ILog           log;
+    private readonly UiThreadHelper uiThreadHelper;
 
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="RelayCommand" /> class.
+    /// </summary>
+    /// <param name="execute">
+    ///     The action to execute when the command is invoked. This parameter is required.
+    /// </param>
+    /// <param name="canExecute">
+    ///     A function that determines whether the command can execute. If null, the command is always executable.
+    /// </param>
+    /// <param name="name">
+    ///     An optional name for the command. If null, the default value "unnamed" will be used.
+    /// </param>
+    /// <param name="log">
+    ///     An optional logger instance for logging purposes. If null, a degenerate logger will be used.
+    /// </param>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the instance is created on a thread other than the UI thread.
+    /// </exception>
     public RelayCommand(Action execute, Func<bool>? canExecute, string? name = null, ILog? log = null)
     {
+        uiThreadHelper = new UiThreadHelper(); // will throw if not created on the UI thread.
         Name = name ?? "unnamed";
         executeAction = execute;
         canExecuteQuery = canExecute ?? (() => true);
@@ -70,6 +91,8 @@ public class RelayCommand : IRelayCommand
 
     public event EventHandler? CanExecuteChanged;
 
+    protected virtual void OnCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
     public void RaiseCanExecuteChanged()
     {
         try
@@ -78,8 +101,7 @@ public class RelayCommand : IRelayCommand
                 .Message("RelayCommand {name} RaiseCanExecuteChanged", Name)
                 .Property("relayCommand", this)
                 .Write();
-
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            uiThreadHelper.RunOnUiThread(OnCanExecuteChanged);
         }
         catch (Exception e)
         {
@@ -109,12 +131,20 @@ public class RelayCommand<TParam> : IRelayCommand<TParam>
 
     public bool CanExecute(object? parameter)
     {
-        var typedParam = (TParam?)parameter; // Will throw if parameter is not assignable to TParam.
+        if (parameter is not TParam typedParam)
+        {
+            log.Warn()
+                .Message("RelayCommand {name} CanExecute received parameter of an incorrect type: {parameter}", Name, parameter)
+                .Property("relayCommand", this)
+                .Write();
+            return false;
+        }
+
         try
         {
             var canExecute = canExecuteQuery(typedParam);
             log.Trace()
-                .Message("RelayCommand {{name}} CanExecute({parameter}) = {{canExecute}}", Name, typedParam, canExecute)
+                .Message("RelayCommand {name} CanExecute({parameter}) = {canExecute}", Name, typedParam, canExecute)
                 .Property("relayCommand", this)
                 .Write();
             return canExecute;
@@ -136,7 +166,15 @@ public class RelayCommand<TParam> : IRelayCommand<TParam>
     /// <param name="parameter">The command parameter which must be of runtime type <typeparamref name="TParam" /> or null.</param>
     public void Execute(object? parameter)
     {
-        var typedParam = (TParam?)parameter; // Will throw if parameter is not assignable to TParam.
+        if (parameter is not TParam typedParam)
+        {
+            log.Warn()
+                .Message("RelayCommand {name} Execute received parameter of an incorrect type: {parameter}", Name, parameter)
+                .Property("relayCommand", this)
+                .Write();
+            return;
+        }
+
         try
         {
             log.Trace()

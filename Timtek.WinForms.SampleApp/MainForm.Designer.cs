@@ -35,12 +35,13 @@
             annunciatorPanel1 = new AnnunciatorPanel();
             annunciatorReady = new Annunciator();
             annunciatorFail = new Annunciator();
-            muteToggle = new SlidingToggleButton.ToggleSwitch();
+            muteToggle = new Timtek.WinForms.SlidingToggleButton.ToggleSwitch();
             mainFormViewModelBindingSource = new BindingSource(components);
             RelayCommandButton = new Button();
-            toggleSwitch1 = new SlidingToggleButton.ToggleSwitch();
+            toggleSwitch1 = new Timtek.WinForms.SlidingToggleButton.ToggleSwitch();
             MvvmGroup = new GroupBox();
-            aGauge1 = new Gauge.AGauge();
+            aGauge1 = new Timtek.WinForms.Gauge.AGauge();
+            VisualButton = new VisualEnableDisableButton();
             annunciatorPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainFormViewModelBindingSource).BeginInit();
             MvvmGroup.SuspendLayout();
@@ -193,11 +194,24 @@
             aGauge1.Text = "aGauge1";
             aGauge1.Value = 100F;
             // 
+            // VisualButton
+            // 
+            VisualButton.BackColor = Color.DarkSeaGreen;
+            VisualButton.DataBindings.Add(new Binding("Command", mainFormViewModelBindingSource, "ButtonClickRelayCommand", true, DataSourceUpdateMode.OnPropertyChanged));
+            VisualButton.Enabled = false;
+            VisualButton.Location = new Point(175, 274);
+            VisualButton.Name = "VisualButton";
+            VisualButton.Size = new Size(121, 61);
+            VisualButton.TabIndex = 9;
+            VisualButton.Text = "VisualButton";
+            VisualButton.UseVisualStyleBackColor = false;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(640, 547);
+            Controls.Add(VisualButton);
             Controls.Add(aGauge1);
             Controls.Add(MvvmGroup);
             Controls.Add(muteToggle);
@@ -228,5 +242,6 @@
         private SlidingToggleButton.ToggleSwitch toggleSwitch1;
         private GroupBox MvvmGroup;
         private Gauge.AGauge aGauge1;
+        private VisualEnableDisableButton VisualButton;
     }
 }
