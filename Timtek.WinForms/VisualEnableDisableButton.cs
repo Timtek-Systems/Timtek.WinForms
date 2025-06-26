@@ -32,6 +32,7 @@ public sealed class VisualEnableDisableButton : Button
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Color BackColor
     {
         get => base.BackColor;

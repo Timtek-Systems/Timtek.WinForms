@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0-windows;net6.0-windows;net4.8</TargetFrameworks>
     <Nullable>enable</Nullable>
@@ -20,27 +19,23 @@ In particular, we have a set of cadenced controls that can flash in a predetermi
     <PackageLicenseExpression>MIT-0</PackageLicenseExpression>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+    <PackageReference Include="GitVersion.MsBuild">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="TA.Utils.Core" Version="2.8.0" />
+    <PackageReference Include="TA.Utils.Core" />
   </ItemGroup>
-
   <!-- 👇 disable the nullable warnings when compiling for .NET Standard 2.0 -->
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <NoWarn>$(NoWarn);nullable</NoWarn>
   </PropertyGroup>
-
 </Project>

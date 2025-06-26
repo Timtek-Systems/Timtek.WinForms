@@ -45,7 +45,7 @@ internal sealed class CadencedControlUpdater
     private Task updateTask;
     private readonly ILog log;
 
-    private CadencedControlUpdater(ILog log = null)
+    private CadencedControlUpdater(ILog? log = null)
     {
         this.log = log ?? new DegenerateLoggerService();
         cancellationTokenSource = new CancellationTokenSource();
