@@ -5,7 +5,7 @@
 ///     operations that should run on the UI thread, do run on that thread. Thus, it tries hard to protect against doing
 ///     the wrong thing and will throw exceptions if something looks wrong.
 /// </summary>
-public class UiThreadHelper
+public class UiThreadHelper : IUiThreadDispatcher
 {
     private readonly SynchronizationContext syncContext;
 
@@ -41,4 +41,7 @@ public class UiThreadHelper
         //    syncContext.Post(_ => action(), null);
             syncContext.Post(_ => action(), null);
     }
+
+    /// <inheritdoc />
+    void IUiThreadDispatcher.Post(Action action) => RunOnUiThread(action);
 }

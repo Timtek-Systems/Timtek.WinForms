@@ -18,7 +18,7 @@ public class RelayCommand : IRelayCommand
     private readonly Action         executeAction;
     private readonly Func<bool>     canExecuteQuery;
     private readonly ILog           log;
-    private readonly UiThreadHelper uiThreadHelper;
+    private readonly IUiThreadDispatcher dispatcher;
 
 
     /// <summary>
@@ -36,12 +36,9 @@ public class RelayCommand : IRelayCommand
     /// <param name="log">
     ///     An optional logger instance for logging purposes. If null, a degenerate logger will be used.
     /// </param>
-    /// <exception cref="InvalidOperationException">
-    ///     Thrown if the instance is created on a thread other than the UI thread.
-    /// </exception>
     public RelayCommand(Action execute, Func<bool>? canExecute, string? name = null, ILog? log = null)
     {
-        uiThreadHelper = new UiThreadHelper(); // will throw if not created on the UI thread.
+        dispatcher = UiThreadDispatcherContext.Current;
         Name = name ?? "unnamed";
         executeAction = execute;
         canExecuteQuery = canExecute ?? (() => true);
@@ -101,7 +98,7 @@ public class RelayCommand : IRelayCommand
                 .Message("RelayCommand {name} RaiseCanExecuteChanged", Name)
                 .Property("relayCommand", this)
                 .Write();
-            uiThreadHelper.RunOnUiThread(OnCanExecuteChanged);
+            dispatcher.Post(OnCanExecuteChanged);
         }
         catch (Exception e)
         {
@@ -120,9 +117,18 @@ public class RelayCommand<TParam> : IRelayCommand<TParam>
     private readonly Action<TParam?> executeAction;
     private readonly Func<TParam?, bool> canExecuteQuery;
     private readonly ILog log;
+    private readonly IUiThreadDispatcher dispatcher;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="RelayCommand{TParam}" /> class.
+    /// </summary>
+    /// <param name="execute">The action to execute with a parameter.</param>
+    /// <param name="canExecute">Optional predicate to determine if the command can execute.</param>
+    /// <param name="name">Optional name for the command.</param>
+    /// <param name="log">Optional logger instance.</param>
     public RelayCommand(Action<TParam> execute, Func<TParam,bool>? canExecute, string? name = null, ILog? log = null)
     {
+        dispatcher = UiThreadDispatcherContext.Current;
         Name = name ?? "unnamed";
         executeAction = execute;
         canExecuteQuery = canExecute ?? ((TParam? _) => true);
@@ -203,7 +209,7 @@ public class RelayCommand<TParam> : IRelayCommand<TParam>
                 .Property("relayCommand", this)
                 .Write();
 
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            dispatcher.Post(() => CanExecuteChanged?.Invoke(this, EventArgs.Empty));
         }
         catch (Exception e)
         {

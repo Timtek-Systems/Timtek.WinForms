@@ -15,7 +15,7 @@ public class AsyncRelayCommand<TParam> : IRelayCommand<TParam>
     private readonly Func<TParam, bool> canExecuteQuery;
     private long isExecuting;
     private readonly ILog log;
-    private readonly UiThreadHelper uiThreadHelper;
+    private readonly IUiThreadDispatcher dispatcher;
 
     /// <summary>
     ///     Initialize a new instance of a relay command that executes asynchronously and takes parameter of type
@@ -37,7 +37,7 @@ public class AsyncRelayCommand<TParam> : IRelayCommand<TParam>
         string?             name       = null,
         ILog?               log        = null)
     {
-        uiThreadHelper = new UiThreadHelper(); // Will throw if not on the UI thread.
+        dispatcher = UiThreadDispatcherContext.Current;
         Name = name ?? "unnamed";
         this.execute = execute;
         canExecuteQuery = canExecute ?? (param => true);
@@ -70,7 +70,7 @@ public class AsyncRelayCommand<TParam> : IRelayCommand<TParam>
                 .Message("AsyncRelayCommand {name} RaiseCanExecuteChanged", Name)
                 .Property("relayCommand", this)
                 .Write();
-            uiThreadHelper.RunOnUiThread(OnCanExecuteChanged);
+            dispatcher.Post(OnCanExecuteChanged);
         }
         catch (Exception e)
         {
@@ -157,7 +157,7 @@ public class AsyncRelayCommand : AsyncRelayCommand<object>
     public AsyncRelayCommand(Func<Task> execute, Func<bool>? canExecute = null, string? name = null, ILog? log = null) :
         base(
             async obj => await execute(),
-            obj => canExecute(),
+            obj => canExecute?.Invoke() ?? true,
             name,
             log) { }
 }
